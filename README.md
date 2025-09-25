@@ -15,6 +15,46 @@ Rob lets you manage your Robinhood Portfolio in bulk. Increase or decrease all o
 
 ## Installation
 
+### Option 1: Install as a CLI Tool (Recommended)
+
+**Easy Installation:**
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd rob
+
+# Run the install script
+./install.sh
+
+# Configure your credentials
+rob config
+
+# Start rob in any terminal
+rob
+```
+
+### Configuring Credentials
+
+When installed as a CLI tool, rob looks for credentials in this order:
+
+1. **Current directory** (`.env` file)
+2. **User config directory** (`~/.config/rob/.env`)
+
+To set up credentials after installation:
+
+```bash
+# Interactive setup
+rob config
+
+# Or provide credentials directly
+rob config --username your@email.com --password yourpassword --totp-secret YOURSECRET
+```
+
+The credentials are stored securely in `~/.config/rob/.env` with proper permissions.
+
+### Option 2: Run Directly
+
 1. Install dependencies:
 
 ```bash
@@ -65,7 +105,89 @@ Note: After first successful login, the tool saves an authentication token to `r
 
 ## Usage
 
-Simply run the script with no arguments:
+After installation, use `rob` from anywhere:
+
+### CLI Commands
+
+**Get help:**
+
+```bash
+rob --help
+```
+
+**Configure credentials:**
+
+```bash
+rob config
+```
+
+**Show portfolio summary:**
+
+```bash
+rob portfolio
+```
+
+**Increase positions by percentage:**
+
+```bash
+rob adjust --action increase --percentage 5
+```
+
+**Decrease positions by percentage:**
+
+```bash
+rob adjust --action decrease --percentage 10
+```
+
+**Dry run (see what would happen without executing trades):**
+
+```bash
+rob adjust --action increase --percentage 5 --dry-run
+```
+
+**Auto-confirm trades (non-interactive):**
+
+```bash
+rob adjust --action increase --percentage 5 --no-confirm
+```
+
+**Interactive mode:**
+
+```bash
+rob
+```
+
+### Command Options
+
+The `adjust` command supports these options:
+
+- `--action, -a`: Action to perform (`increase` or `decrease`) - **required**
+- `--percentage, -p`: Percentage to adjust positions by (0-100) - **required**
+- `--confirm/--no-confirm`: Auto-confirm trades (default: confirm)
+- `--dry-run`: Show what would be done without executing trades
+
+### Examples
+
+```bash
+# First, configure your credentials
+rob config
+
+# Get portfolio summary
+rob portfolio
+
+# Increase all positions by 5% with confirmation
+rob adjust -a increase -p 5
+
+# Decrease positions by 10% without confirmation
+rob adjust --action decrease --percentage 10 --no-confirm
+
+# Preview what would happen with a 3% increase
+rob adjust -a increase -p 3 --dry-run
+```
+
+### Running Directly
+
+If not installed as a CLI tool, run the script with no arguments:
 
 ```bash
 python3 rob.py

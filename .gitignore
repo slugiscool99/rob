@@ -7,3 +7,4 @@ robinhood_auth.pickle
 *.pickle
 
 .DS_Store
+*.egg-info
