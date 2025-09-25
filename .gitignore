@@ -1,0 +1,9 @@
+.env
+__pycache__/
+venv/
+
+# Robinhood authentication
+robinhood_auth.pickle
+*.pickle
+
+.DS_Store
