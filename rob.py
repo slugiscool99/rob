@@ -36,11 +36,22 @@ class RobinhoodPositionManager:
             config_dir = os.path.expanduser("~/.config/rob")
             config_env = os.path.join(config_dir, ".env")
             if os.path.exists(config_env):
-                load_dotenv(config_env)
+                try:
+                    load_dotenv(config_env)
+                except PermissionError:
+                    print(f"{Fore.RED}Permission denied accessing {config_env}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}Try running with sudo: sudo rob{Style.RESET_ALL}")
+                    sys.exit(1)
 
             # Try ~/.rob/.env as fallback
             elif os.path.exists(os.path.expanduser("~/.rob/.env")):
-                load_dotenv(os.path.expanduser("~/.rob/.env"))
+                try:
+                    load_dotenv(os.path.expanduser("~/.rob/.env"))
+                except PermissionError:
+                    rob_env = os.path.expanduser("~/.rob/.env")
+                    print(f"{Fore.RED}Permission denied accessing {rob_env}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}Try running with sudo: sudo rob{Style.RESET_ALL}")
+                    sys.exit(1)
         
     def authenticate(self) -> bool:
         """Authenticate with Robinhood"""
