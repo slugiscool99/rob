@@ -68,13 +68,13 @@ Note: After first successful login, the tool saves an authentication token to `r
 Simply run the script with no arguments:
 
 ```bash
-python3 robinhood_position_manager.py
+python3 rob.py
 ```
 
 ## Example Session
 
 ```
-$ python3 robinhood_position_manager.py
+$ python3 rob.py
 
 ============================================================
          Robinhood Position Manager
