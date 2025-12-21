@@ -27,7 +27,8 @@ get_rc_file() {
 
 # Check if we're being called with --install-only (internal use)
 if [ "$1" = "--install-only" ]; then
-    # This is the sudo part - just do the installation
+    # This is the sudo part - only install system files
+    # DO NOT create user config directories here (they'd be owned by root)
     SHARE_DIR="/usr/local/share/rob"
     echo "Creating share directory: $SHARE_DIR"
     mkdir -p "$SHARE_DIR"
@@ -46,24 +47,7 @@ if [ "$1" = "--install-only" ]; then
 
     chmod +x "$INSTALL_DIR/rob"
 
-    # Create config directory for user
-    USER_CONFIG_DIR="$HOME/.config/rob"
-    if [ ! -d "$USER_CONFIG_DIR" ]; then
-        mkdir -p "$USER_CONFIG_DIR"
-        echo "Created config directory: $USER_CONFIG_DIR"
-    fi
-
-    RC_FILE=$(get_rc_file)
-    if [ -n "$RC_FILE" ]; then
-        if ! grep -q "$INSTALL_DIR" "$RC_FILE"; then
-            echo "export PATH=\$PATH:$INSTALL_DIR" >> "$RC_FILE"
-            echo "Added $INSTALL_DIR to PATH in $RC_FILE"
-        fi
-    else
-        echo "Couldn't detect shell. Please add $INSTALL_DIR to your PATH manually."
-    fi
-
-    echo "Installation completed successfully."
+    echo "System installation completed."
     exit 0
 fi
 
@@ -103,11 +87,31 @@ fi
 
 echo "Dependencies installed successfully. Now installing rob system-wide..."
 
-# Now run the install-only part with sudo
+# Create user config directory BEFORE sudo (so it's owned by user, not root)
+USER_CONFIG_DIR="$HOME/.config/rob"
+if [ ! -d "$USER_CONFIG_DIR" ]; then
+    mkdir -p "$USER_CONFIG_DIR"
+    echo "Created config directory: $USER_CONFIG_DIR"
+fi
+
+# Now run the install-only part with sudo (system files only)
 if ! sudo "$0" --install-only; then
     echo "Installation failed."
     exit 1
 fi
 
+# Update PATH in shell RC file (as user, not root)
+RC_FILE=$(get_rc_file)
+if [ -n "$RC_FILE" ]; then
+    if ! grep -q "$INSTALL_DIR" "$RC_FILE"; then
+        echo "export PATH=\$PATH:$INSTALL_DIR" >> "$RC_FILE"
+        echo "Added $INSTALL_DIR to PATH in $RC_FILE"
+    fi
+else
+    echo "Couldn't detect shell. Please add $INSTALL_DIR to your PATH manually."
+fi
+
+echo ""
 echo "Installation complete! You can now use 'rob' immediately."
-echo "Run 'rob --help' for instructions."
+echo "Run 'rob config' to set up your credentials."
+echo "Run 'rob --help' for more options."

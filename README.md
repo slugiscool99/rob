@@ -362,6 +362,18 @@ Instead of manually entering your 2FA code each time, configure automatic code g
 | `OPENAI_KEY`            | OpenAI API key (for analysis)     |
 | `ROB_DEBUG`             | Set to `1` for debug output       |
 
+## Troubleshooting
+
+### Permission denied accessing ~/.config/rob/.env
+
+If you see this error, the config directory was created with root ownership during installation. Fix it with:
+
+```bash
+sudo chown -R $USER ~/.config/rob
+```
+
+Then run `rob config` to set up your credentials.
+
 ## Disclaimer
 
 ⚠️ **This tool executes real trades on your Robinhood account.**
