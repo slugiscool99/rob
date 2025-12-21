@@ -1,264 +1,376 @@
 # rob
 
-Rob lets you manage your Robinhood Portfolio in bulk. Increase or decrease all of your positions by some percentage
+A command-line tool for Robinhood portfolio management and AI-powered stock analysis.
 
-## Features
+```
+┌────────────────────────────────────┐
+│  Portfolio                         │
+├────────────────────────────────────┤
+│  Total      $125,432.00            │
+│  Cash         $8,234.00            │
+│  Invested   $117,198.00            │
+└────────────────────────────────────┘
 
-- **Portfolio Overview**: Displays total portfolio value and available cash on startup
-- **Cost Estimation**: Shows expected total cost before processing any trades
-- **Balance Checking**: Prevents trades if insufficient funds available
-- **Bulk position management**: Increase or decrease all your positions by a percentage
-- **Interactive confirmation**: Review each trade before execution
-- **Safety features**: Skip or abort at any time
-- **Clear display**: Shows current position, shares to trade, and estimated cost
-- **Secure authentication**: Supports 2FA and secure password input
+▶ 📊  View positions with ratings
+  📈  Increase all positions by %
+  📉  Decrease all positions by %
+  🔍  Analyze a ticker
+  ──────────────────────────────────
+  ✗   Exit
+```
 
-## Installation
+## What It Does
 
-### Option 1: Install as a CLI Tool (Recommended)
+### 🖥️ Interactive Dashboard
 
-**Easy Installation:**
+Run `rob` with no arguments to launch the interactive dashboard:
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd rob
-
-# Run the install script
-./install.sh
-
-# Configure your credentials
-rob config
-
-# Start rob in any terminal
 rob
 ```
 
-### Configuring Credentials
+This gives you a visual portfolio summary and menu to:
 
-When installed as a CLI tool, rob looks for credentials in this order:
+- View positions with ratings and allocation %
+- Increase or decrease all positions by a percentage
+- Analyze any ticker with AI
+- Navigate with arrow keys, no commands to remember
 
-1. **Current directory** (`.env` file)
-2. **User config directory** (`~/.config/rob/.env`)
+### 📊 Portfolio Management
 
-To set up credentials after installation:
-
-```bash
-# Interactive setup
-rob config
-
-# Or provide credentials directly
-rob config --username your@email.com --password yourpassword --totp-secret YOURSECRET
-```
-
-The credentials are stored securely in `~/.config/rob/.env` with proper permissions.
-
-### Option 2: Run Directly
-
-1. Install dependencies:
+Increase or decrease **all** your Robinhood positions by a percentage with a single command. Perfect for systematic rebalancing or scaling in/out of your entire portfolio.
 
 ```bash
-pip3 install -r requirements.txt
-```
-
-2. (Optional) Create a `.env` file for credentials:
-
-```bash
-ROBINHOOD_USERNAME=your_email@example.com
-ROBINHOOD_PASSWORD=your_password
-
-# For automatic 2FA code generation (highly recommended!)
-ROBINHOOD_TOTP_SECRET=YOUR_SECRET_KEY_HERE
-```
-
-### Setting Up Automatic 2FA Code Generation
-
-Instead of manually entering your 2FA code each time, you can configure automatic code generation:
-
-**How to get your TOTP secret:**
-
-**Option 1: If setting up 2FA for the first time:**
-
-1. When Robinhood shows you the QR code during 2FA setup
-2. Look for "Can't scan? Enter manually" or similar option
-3. Copy the secret key shown (looks like: `ABCD1234EFGH5678...`)
-4. Add it to your `.env` file as `ROBINHOOD_TOTP_SECRET`
-
-**Option 2: If you already have 2FA enabled:**
-
-1. Temporarily disable 2FA in your Robinhood security settings
-2. Re-enable 2FA and grab the secret key when shown
-3. Add it to your `.env` file as `ROBINHOOD_TOTP_SECRET`
-4. Keep this secret secure - it's like a password!
-
-**Option 3: If you have Google Authenticator:**
-
-1. Transfer accounts
-2. Export accounts
-3. Select robinhood
-4. Read QR code, you should get something like `otpauth-migration://offline?data={code}`
-5. Use [this package](https://github.com/dim13/otpauth) or something similar to decode the secret value (looks like `ACBDEFGH12345678`)
-
-With the TOTP secret configured, the tool will automatically generate fresh 2FA codes when needed, eliminating the need to check your authenticator app.
-
-Note: After first successful login, the tool saves an authentication token to `robinhood.pickle` for faster subsequent logins.
-
-## Usage
-
-After installation, use `rob` from anywhere:
-
-### CLI Commands
-
-**Get help:**
-
-```bash
-rob --help
-```
-
-**Configure credentials:**
-
-```bash
-rob config
-```
-
-**Show portfolio summary:**
-
-```bash
-rob portfolio
-```
-
-**Increase positions by percentage:**
-
-```bash
+# Increase all positions by 5%
 rob adjust --action increase --percentage 5
-```
 
-**Decrease positions by percentage:**
+# Decrease all positions by 10% (taking profits)
+rob adjust -a decrease -p 10
 
-```bash
-rob adjust --action decrease --percentage 10
-```
-
-**Dry run (see what would happen without executing trades):**
-
-```bash
-rob adjust --action increase --percentage 5 --dry-run
-```
-
-**Auto-confirm trades (non-interactive):**
-
-```bash
-rob adjust --action increase --percentage 5 --no-confirm
-```
-
-**Interactive mode:**
-
-```bash
-rob
-```
-
-### Command Options
-
-The `adjust` command supports these options:
-
-- `--action, -a`: Action to perform (`increase` or `decrease`) - **required**
-- `--percentage, -p`: Percentage to adjust positions by (0-100) - **required**
-- `--confirm/--no-confirm`: Auto-confirm trades (default: confirm)
-- `--dry-run`: Show what would be done without executing trades
-
-### Examples
-
-```bash
-# First, configure your credentials
-rob config
-
-# Get portfolio summary
-rob portfolio
-
-# Increase all positions by 5% with confirmation
-rob adjust -a increase -p 5
-
-# Decrease positions by 10% without confirmation
-rob adjust --action decrease --percentage 10 --no-confirm
-
-# Preview what would happen with a 3% increase
+# Preview what would happen (no trades executed)
 rob adjust -a increase -p 3 --dry-run
 ```
 
-### Running Directly
+Features:
 
-If not installed as a CLI tool, run the script with no arguments:
+- **Cost estimation** before executing any trades
+- **Balance checking** to prevent insufficient funds errors
+- **Interactive confirmation** for each trade (or `--no-confirm` for automation)
+- **Position-by-position control** with skip/abort options
+
+### 🤖 AI Stock Analysis
+
+Get comprehensive analysis on any stock using earnings data, transcripts, and real-time web search.
 
 ```bash
-python3 rob.py
+rob analyze AAPL
 ```
 
-## Example Session
+The analyzer:
+
+1. Fetches latest **ticker data** (price, market cap, etc.)
+2. Fetches latest **earnings report** (revenue, EPS, margins)
+3. Fetches **earnings call transcript** (management commentary)
+4. Runs analysis through **GPT-5.2 with web search** to:
+   - Find comparable companies and relative valuation
+   - Check recent news and analyst sentiment
+   - Evaluate management credibility
+   - Identify headwinds and tailwinds
+   - Generate a 1-5 buy score with rationale
+
+Results are **cached per quarter** - if you've already analyzed a stock for the current quarter, it shows the cached analysis instantly. Use `--refresh` to force a new analysis.
+
+```bash
+# Force fresh analysis even if cached
+rob analyze AAPL --refresh
+```
+
+#### Analysis Output
+
+Shows a compact summary first, then an interactive menu to drill into sections:
 
 ```
-$ python3 rob.py
-
 ============================================================
-         Robinhood Position Manager
+         AAPL ANALYSIS SUMMARY
 ============================================================
 
-Enter your Robinhood username (email): user@example.com
-Enter your Robinhood password:
-Enter your 2FA code (if applicable, press Enter to skip): 123456
-✓ Successfully authenticated with Robinhood
-
-Fetching portfolio information...
-
-Portfolio Summary:
-  Total Portfolio Value: $50,000.00
-  Available Cash: $5,000.00
-  Positions Value: $45,000.00
-
-What would you like to do?
-  1) Increase positions
-  2) Decrease positions
-  3) Exit
-
-Enter your choice (1-3): 1
-
-Enter the percentage to increase positions by: 5
-
-Calculating expected cost...
-
-Operation Summary:
-  Action: INCREASE positions by 5%
-  Expected Total Cost: $2,250.00
-  Available Cash: $5,000.00
-  Remaining Cash After: $2,750.00
-
-Proceed with increasing positions? (yes/no): yes
+  Rating: ★★★★☆ BUY
+  Outlook: Long-term BULLISH | Short-term NEUTRAL
+  Valuation: FAIRLY VALUED vs peers
+  News: POSITIVE
+  Management: 4/5
+  ⚠ Top Risk: Smartphone market saturation in developed markets...
+  ✦ Top Catalyst: Services revenue growing at 15% annually...
 
 ============================================================
-Processing positions to increase by 5.0%
-============================================================
 
-[1/3] AAPL
-  Current position: 100.00 shares @ $150.00 avg
-  Current price: $175.00
-  → BUY 5 shares for ~$875.00
+  AAPL  ★★★★☆ BUY
+  Strong services growth offsetting hardware maturity...
 
-  Press ENTER to execute, 'skip' to skip, or 'abort' to exit: [ENTER]
-✓ Bought 5 shares of AAPL
-------------------------------------------------------------
+  ↑↓ Navigate  │  Enter Select  │  q Quit
 
-[2/3] TSLA
-  Current position: 50.00 shares @ $200.00 avg
-  Current price: $250.00
-  → BUY 2 shares for ~$500.00
-
-  Press ENTER to execute, 'skip' to skip, or 'abort' to exit: skip
-Skipping TSLA
-------------------------------------------------------------
-
-Position processing complete!
-✓ Logged out successfully
+▶ 📊 Summary & Rationale
+  📈 Long-term Outlook
+  📉 Short-term Outlook
+  🏢 Comparables & Valuation
+  📰 Recent News
+  ⚠️  Risks & Headwinds
+  🚀 Growth & Tailwinds
+  👔 Management Assessment
+  📋 Show All
+  ✓ Done
 ```
+
+### 📈 Interactive Position Viewer
+
+```bash
+rob positions
+```
+
+Browse all your positions sorted by value with allocation percentages and analysis ratings:
+
+```
+  Positions │ Select to analyze │ q Quit
+
+▶ NVDA    $    45,200    35.2%  ★★★★★ BUY
+  AAPL    $    32,500    25.3%  ★★★★☆ BUY
+  MSFT    $    28,400    22.1%  ★★★★☆ BUY
+  GOOGL   $    12,100     9.4%  ★★★☆☆ HOLD
+  AMZN    $    10,200     7.9%
+  ────────────────────────────────────────
+  ✓ Done
+```
+
+Features:
+
+- Positions sorted by value (largest first)
+- Shows allocation percentage of total portfolio
+- Displays cached buy/sell ratings (if analyzed)
+- Select any position to view or run analysis
+- Offer to refresh stale analyses
+
+### 📊 Portfolio Summary
+
+```bash
+rob portfolio
+```
+
+Quick view of:
+
+- Total portfolio value
+- Available cash
+- Each position with current price and value
+
+## Installation
+
+### Quick Install
+
+```bash
+git clone <repository-url>
+cd rob
+./install.sh
+```
+
+### Configure Credentials
+
+```bash
+rob config
+```
+
+You'll be prompted for:
+
+**Robinhood Credentials:**
+
+- **Username** (email)
+- **Password**
+- **TOTP secret** (optional, for automatic 2FA)
+
+**API Keys (for `analyze` command):**
+
+- **API Ninjas key** - for fetching earnings data and transcripts
+- **OpenAI key** - for AI-powered analysis with GPT-5.2
+
+All credentials are stored securely in `~/.config/rob/.env` with proper permissions (readable only by you).
+
+### Getting API Keys
+
+| Service    | Get Key                              | Notes                            |
+| ---------- | ------------------------------------ | -------------------------------- |
+| API Ninjas | https://api-ninjas.com/              | Free tier: 10,000 requests/month |
+| OpenAI     | https://platform.openai.com/api-keys | Pay-per-use, ~$0.05 per analysis |
+
+You can also pass keys directly via CLI options:
+
+```bash
+rob config --api-ninjas YOUR_KEY --openai YOUR_KEY
+```
+
+Or set individual keys without re-entering everything (just press Enter to keep existing values).
+
+## Commands Reference
+
+| Command              | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `rob`                | Interactive mode with portfolio dashboard and menus |
+| `rob positions`      | Interactive position viewer with analysis ratings   |
+| `rob portfolio`      | Show portfolio summary and positions (text output)  |
+| `rob adjust`         | Bulk adjust positions by percentage                 |
+| `rob analyze TICKER` | AI analysis of a stock                              |
+| `rob config`         | Configure Robinhood credentials and API keys        |
+| `rob --help`         | Show help                                           |
+
+### `rob adjust` Options
+
+| Option                   | Short | Description                                 |
+| ------------------------ | ----- | ------------------------------------------- |
+| `--action`               | `-a`  | `increase` or `decrease` (required)         |
+| `--percentage`           | `-p`  | Percentage to adjust (0-100, required)      |
+| `--confirm/--no-confirm` |       | Prompt before each trade (default: confirm) |
+| `--dry-run`              |       | Preview trades without executing            |
+
+### `rob analyze` Options
+
+| Option      | Short | Description                       |
+| ----------- | ----- | --------------------------------- |
+| `--refresh` | `-r`  | Force new analysis even if cached |
+
+### `rob config` Options
+
+| Option          | Description                        |
+| --------------- | ---------------------------------- |
+| `--username`    | Robinhood username (email)         |
+| `--password`    | Robinhood password                 |
+| `--totp-secret` | TOTP secret for automatic 2FA      |
+| `--api-ninjas`  | API Ninjas key (for earnings data) |
+| `--openai`      | OpenAI API key (for AI analysis)   |
+
+All options are interactive if not provided - just run `rob config` and follow the prompts.
+
+## Examples
+
+### Morning Portfolio Check
+
+```bash
+# Interactive dashboard - best for daily use
+rob
+
+# Or jump straight to positions with ratings
+rob positions
+
+# Quick text summary (no interactivity)
+rob portfolio
+```
+
+### Scale Into Positions
+
+```bash
+# Preview first
+rob adjust -a increase -p 5 --dry-run
+
+# Execute with confirmation on each trade
+rob adjust -a increase -p 5
+
+# Execute without prompts (be careful!)
+rob adjust -a increase -p 5 --no-confirm
+```
+
+### Research a Stock
+
+```bash
+rob analyze NVDA
+```
+
+### Analyze Multiple Stocks
+
+```bash
+for ticker in AAPL MSFT GOOGL; do
+  rob analyze $ticker
+done
+```
+
+## Setting Up Automatic 2FA
+
+Instead of manually entering your 2FA code each time, configure automatic code generation:
+
+### Getting Your TOTP Secret
+
+**Option 1: Setting up 2FA for the first time**
+
+1. When Robinhood shows you the QR code during 2FA setup
+2. Look for "Can't scan? Enter manually"
+3. Copy the secret key (looks like: `ABCD1234EFGH5678...`)
+4. Run `rob config` and paste it when prompted
+
+**Option 2: Already have 2FA enabled**
+
+1. Temporarily disable 2FA in Robinhood security settings
+2. Re-enable 2FA and grab the secret key when shown
+3. Add it via `rob config`
+
+**Option 3: From Google Authenticator**
+
+1. Transfer accounts → Export accounts → Select Robinhood
+2. Read QR code to get `otpauth-migration://offline?data={code}`
+3. Use [otpauth](https://github.com/dim13/otpauth) to decode the secret
+
+## How It Works
+
+### Position Adjustment
+
+1. Authenticates with Robinhood (uses saved token if available)
+2. Fetches your current portfolio and positions
+3. Calculates shares to trade for each position based on percentage
+4. Shows estimated total cost and checks available cash
+5. Iterates through each position:
+   - Shows current position details
+   - Calculates and displays proposed trade
+   - Waits for confirmation (unless `--no-confirm`)
+   - Executes market order
+6. Logs out
+
+### Stock Analysis
+
+1. Checks for cached analysis from current quarter
+2. If no cache or `--refresh`:
+   - Fetches ticker data from API Ninjas
+   - Fetches latest earnings transcript
+   - Fetches earnings data for that quarter
+   - Sends all data to GPT-5.2 with web search enabled
+   - AI searches for comparables, recent news, analyst opinions
+   - Generates structured analysis with buy score
+   - Caches result for the quarter
+3. Displays interactive analysis with drill-down menu
+
+## Data Storage
+
+- **Credentials**: `~/.config/rob/.env`
+- **Auth token**: `./robinhood.pickle` (in current directory)
+- **Analysis data**: `~/.config/rob/data/{TICKER}/`
+  - `ticker_data.json` - Price, market cap, etc.
+  - `earnings_YYYY_QN.json` - Quarterly earnings
+  - `transcript_YYYY_QN.json` - Earnings call transcript
+  - `analysis_YYYYMMDD.json` - AI analysis results
+
+## Environment Variables
+
+| Variable                | Description                       |
+| ----------------------- | --------------------------------- |
+| `ROBINHOOD_USERNAME`    | Robinhood email                   |
+| `ROBINHOOD_PASSWORD`    | Robinhood password                |
+| `ROBINHOOD_TOTP_SECRET` | TOTP secret for automatic 2FA     |
+| `API_NINJAS_KEY`        | API Ninjas API key (for analysis) |
+| `OPENAI_KEY`            | OpenAI API key (for analysis)     |
+| `ROB_DEBUG`             | Set to `1` for debug output       |
 
 ## Disclaimer
 
-This tool executes real trades on your Robinhood account. Use at your own risk. Always review each trade carefully before confirming. The authors are not responsible for any financial losses incurred through the use of this tool.
+⚠️ **This tool executes real trades on your Robinhood account.**
+
+- Always review each trade carefully before confirming
+- Use `--dry-run` to preview trades first
+- The authors are not responsible for any financial losses
+- AI analysis is for informational purposes only - not financial advice
+
+## License
+
+MIT
